@@ -1,9 +1,13 @@
-import { Box, Typography } from "@mui/material"
+import ThumbUp from "@mui/icons-material/ThumbUp"
+import ThumbDown from "@mui/icons-material/ThumbDown"
+import { Box, IconButton, Typography } from "@mui/material"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import styled from "styled-components"
 import MainContainer from "../../components/MainContainer"
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const MainBody = styled(Box)`
 	padding: 20px;
@@ -39,6 +43,20 @@ const ArticleDate = styled(Box)`
 const ArticleText = styled(Box)`
 	margin: 20px 0px;
 `
+const Reactions = styled(Box)`
+	display: flex;
+`
+const Reaction = styled(Box)`
+	display: flex;
+	align-items: center;
+	width: 70px;
+`
+const Like = styled(IconButton)`
+	display: flex;
+`
+const Dislike = styled(IconButton)`
+	display: flex;
+`
 const ArticleFooter = styled(Box)`
 	margin: 50px 0px;
 	width: 100%;
@@ -46,6 +64,18 @@ const ArticleFooter = styled(Box)`
 `
 
 const Article = ({ post }) => {
+	const dispatch = useDispatch()
+	const like = useSelector(state => state.likes.likes)
+	const dislike = useSelector(state => state.likes.dislikes)
+
+	const addLike = () => {
+		dispatch({ type: 'ADD_LIKE', payload: 1 })
+	}
+
+	const addDislike = () => {
+		dispatch({ type: 'ADD_DISLIKE', payload: 1 })
+	}
+
 	return (
 		<MainContainer title={`${post.id} | Blog of Max`}>
 			<Head>
@@ -85,6 +115,20 @@ const Article = ({ post }) => {
 				</Box>
 
 				<ArticleFooter>
+					<Reactions>
+						<Reaction>
+							<Like onClick={addLike}>
+								<ThumbUp sx={{ color: '#AF14D7' }} />
+							</Like>
+							{like}
+						</Reaction>
+						<Reaction>
+							<Dislike onClick={addDislike}>
+								<ThumbDown />
+							</Dislike>
+							{dislike}
+						</Reaction>
+					</Reactions>
 					<Link href={'/articles'}>
 						<a>
 							Back to all Articles

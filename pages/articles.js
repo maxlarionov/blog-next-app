@@ -2,7 +2,6 @@ import { Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import Head from "next/head"
 import Link from "next/link"
-import { useEffect, useState } from "react"
 import styled from "styled-components"
 import MainContainer from "../components/MainContainer"
 import Post from "../components/Post"
@@ -24,18 +23,6 @@ font-size: 24px;
 `
 
 const articles = ({ posts }) => {
-	// const [posts, setPosts] = useState([])
-
-	// useEffect(() => {
-	// 	const load = async () => {
-	// 		const response = await fetch('https://jsonplaceholder.typicode.com/posts')
-	// 		const json = await response.json()
-	// 		console.log(JSON.stringify(json))
-	// 		setPosts(json)
-	// 	}
-
-	// 	load()
-	// }, [])
 
 	return (
 		<MainContainer title={'Articles | Max Larionov'}>
