@@ -27,14 +27,14 @@ font-size: 24px;
 
 const Articles = () => {
 
-	const [articles, setArticles] = useState([])
+	const [articlesList, setArticlesList] = useState([])
 
 	useEffect(() => {
 		const articlesRef = collection(db, 'articles')
 		const q = query(articlesRef, where('type', '==', 'text'))
 
 		const unSub = onSnapshot(q, (querySnapshot) => {
-			setArticles(querySnapshot.docs.map(doc => ({ ...doc.data() })))
+			setArticlesList(querySnapshot.docs.map(doc => ({ ...doc.data() })))
 		})
 
 		return unSub
@@ -58,7 +58,7 @@ const Articles = () => {
 					</Box>
 				</MainHeader>
 				<Box>
-					{articles.map(post => (
+					{articlesList.map(post => (
 						<Post key={post.id} id={post.id} title={post.title} />
 					))}
 					<Post />
