@@ -1,5 +1,5 @@
 import {
-   ADD_LIKE, ADD_DISLIKE
+   ADD_LIKE, ADD_DISLIKE, GET_REACTIONS_SUCCESS, ADD_LIKE_REQUEST, ADD_LIKE_SUCCESS, ADD_LIKE_FAILURE, ADD_DISLIKE_REQUEST, ADD_DISLIKE_SUCCESS, ADD_DISLIKE_FAILURE
 } from '../types'
 
 
@@ -7,14 +7,25 @@ import {
 const initialState = {
    likes: 0,
    dislikes: 0,
+   loading: false
 }
 
 export const likesReduser = (state = initialState, action) => {
    switch (action.type) {
-      case ADD_LIKE:
-         return { ...state, likes: state.likes + action.payload }
-      case ADD_DISLIKE:
-         return { ...state, dislikes: state.dislikes + action.payload }
+      case GET_REACTIONS_SUCCESS:
+         return { likes: action.payload.likes, dislikes: action.payload.dislikes }
+      case ADD_LIKE_REQUEST:
+         return { ...state, loading: true }
+      case ADD_LIKE_SUCCESS:
+         return { ...state, likes: state.likes + 1, loading: false }
+      case ADD_LIKE_FAILURE:
+         return { ...state, loading: false }
+      case ADD_DISLIKE_REQUEST:
+         return { ...state, loading: true }
+      case ADD_DISLIKE_SUCCESS:
+         return { ...state, dislikes: state.dislikes + 1, loading: false }
+      case ADD_DISLIKE_FAILURE:
+         return { ...state, loading: false }
       default:
          return state
    }

@@ -1,10 +1,13 @@
 import { Typography } from "@mui/material"
 import { Box } from "@mui/system"
+import { collection, onSnapshot, query, where } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
 import MainContainer from "../components/MainContainer"
 import Post from "../components/Post"
+import { db } from "../utils/Firebase"
 
 const MainBody = styled(Box)`
 padding: 20px;
@@ -22,7 +25,21 @@ font-weight: 700;
 font-size: 24px;
 `
 
-const articles = ({ posts }) => {
+const articles = () => {
+
+	const [articles, setArticles] = useState([])
+
+	useEffect(() => {
+		// getStore()
+		const articlesRef = collection(db, 'articles')
+		const q = query(articlesRef, where('type', '==', 'text'))
+
+		const unSub = onSnapshot(q, (querySnapshot) => {
+			setArticles(querySnapshot.docs.map(doc => ({ ...doc.data() })))
+		})
+
+		return unSub
+	}, [])
 
 	return (
 		<MainContainer title={'Articles | Max Larionov'}>
@@ -42,7 +59,7 @@ const articles = ({ posts }) => {
 					</Box>
 				</MainHeader>
 				<Box>
-					{posts.map(post => (
+					{articles.map(post => (
 						<Post key={post.id} id={post.id} title={post.title} />
 					))}
 					<Post />
@@ -54,13 +71,13 @@ const articles = ({ posts }) => {
 
 export default articles
 
-export async function getStaticProps(context) {
-	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
-	const posts = await response.json()
-	return {
-		props: {
-			posts
-		}, // will be passed to the page component as props
-	}
-}
+// export async function getStaticProps(context) {
+// 	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
+// 	const posts = await response.json()
+// 	return {
+// 		props: {
+// 			posts
+// 		}, // will be passed to the page component as props
+// 	}
+// }
 

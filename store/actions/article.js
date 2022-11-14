@@ -1,42 +1,65 @@
+import { setDoc, updateDoc } from 'firebase/firestore'
 import {
-   GET_TODOS_REQUEST, GET_TODOS_SUCCESS, GET_TODOS_FAILURE,
-   ADD_TODO_FAILURE, ADD_TODO_REQUEST, ADD_TODO_SUCCESS,
-   REMOVE_TODO_REQUEST, REMOVE_TODO_SUCCESS, REMOVE_TODO_FAILURE,
-   EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAILURE,
-   TOGGLE_STATUS_TODO_SUCCESS, TOGGLE_STATUS_TODO_FAILURE
+   ADD_DISLIKE_FAILURE, ADD_DISLIKE_REQUEST, ADD_DISLIKE_SUCCESS,
+   ADD_LIKE_FAILURE, ADD_LIKE_REQUEST, ADD_LIKE_SUCCESS,
+   GET_REACTIONS_SUCCESS
 } from '../types'
-import {
-   getTodos as fetchGetTodos,
-   addTodo as fetchAddTodo,
-   removeTodo as fetchRemoveTodo,
-   updateTodo as fetchUpdateTodo
-} from '../../services/todos'
 
 
-export const getTodos = () => {
+export const getReactions = (data) => {
    return (dispatch) => {
-      dispatch(getTodosRequest())
-      fetchGetTodos()
-         .then(data => {
-            dispatch(getTodosSuccess(data))
-         })
-         .catch(err => dispatch(getTodosFailure(err)))
+      dispatch(getReactionsSuccess(data))
    }
 }
 
-export const getTodosRequest = () => ({
-   type: GET_TODOS_REQUEST,
-})
-
-export const getTodosSuccess = (payload) => ({
-   type: GET_TODOS_SUCCESS,
+export const getReactionsSuccess = (payload) => ({
+   type: GET_REACTIONS_SUCCESS,
    payload
 })
 
-export const getTodosFailure = (payload) => ({
-   type: GET_TODOS_FAILURE,
-   payload
+export const addLike = (articleRef, likes) => {
+   return (dispatch) => {
+      dispatch(addLikeRequest())
+      updateDoc(articleRef, likes)
+         .then(() => dispatch(addLikeSuccess()))
+         .catch(() => dispatch(addLikeFailure()))
+   }
+}
+
+export const addLikeRequest = () => ({
+   type: ADD_LIKE_REQUEST
 })
+
+export const addLikeSuccess = () => ({
+   type: ADD_LIKE_SUCCESS
+})
+
+export const addLikeFailure = () => ({
+   type: ADD_LIKE_FAILURE
+})
+
+export const addDislike = (articleRef, dislikes) => {
+   return (dispatch) => {
+      dispatch(addDislikeRequest())
+      updateDoc(articleRef, dislikes)
+         .then(() => dispatch(addDislikeSuccess()))
+         .catch(() => dispatch(addDislikeFailure()))
+   }
+}
+
+export const addDislikeRequest = () => ({
+   type: ADD_DISLIKE_REQUEST
+})
+
+export const addDislikeSuccess = () => ({
+   type: ADD_DISLIKE_SUCCESS
+})
+
+export const addDislikeFailure = () => ({
+   type: ADD_DISLIKE_FAILURE
+})
+
+//! -------------------------------------------------------------------------
 
 export const addTodo = (data) => {
    return (dispatch) => {

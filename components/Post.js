@@ -41,7 +41,7 @@ font-family: 'Montserrat', sans-serif;
 font-size: 14px;
 `
 
-const Post = ({ id, title }) => {
+const Post = ({ id, title, text }) => {
 	return (
 		<PostWrap>
 			<PostImg>
@@ -57,7 +57,7 @@ const Post = ({ id, title }) => {
 					{title}
 				</PostTitle>
 				<PostText>
-					No JavaScript frameworks were created during the writing of this article. The following is inspired by the article “Its the future...
+					{text}
 				</PostText>
 				<PostBottom>
 					<Box>28.05.2022</Box>

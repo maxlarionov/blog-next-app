@@ -6,8 +6,11 @@ import Image from "next/image"
 import Link from "next/link"
 import styled from "styled-components"
 import MainContainer from "../../components/MainContainer"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"
+import { db } from "../../utils/Firebase"
+import { addDislike, addLike, getReactions } from "../../store/actions/article"
 
 const MainBody = styled(Box)`
 	padding: 20px;
@@ -25,7 +28,7 @@ const Title = styled(Typography)`
 	font-size: 24px;
 `
 const ArticleImg = styled(Box)`
-	width: 630px;
+	width: 620px;
 	height: 300px;
 	border-radius: 20px;
 	overflow: hidden;
@@ -63,28 +66,52 @@ const ArticleFooter = styled(Box)`
 	text-align: center;
 `
 
-const Article = ({ post }) => {
-	const dispatch = useDispatch()
-	const like = useSelector(state => state.likes.likes)
-	const dislike = useSelector(state => state.likes.dislikes)
+const Article = ({ articleProps }) => {
+	const article = JSON.parse(articleProps)
+	const text = article.text
+	const reactions = article.reactions
 
-	const addLike = () => {
-		dispatch({ type: 'ADD_LIKE', payload: 1 })
+	const dispatch = useDispatch()
+
+	useEffect(() => {
+		const reactionsPayload = {
+			likes: reactions.likes,
+			dislikes: reactions.dislikes
+		}
+
+		dispatch(getReactions(reactionsPayload))
+	}, [])
+
+	const likes = useSelector(state => state.likes.likes)
+	const dislikes = useSelector(state => state.likes.dislikes)
+
+	const articleRef = doc(db, 'articles', article.id)
+
+	const addLikeReaction = () => {
+		const setReactions = {
+			'reactions.likes': +likes + 1
+		}
+
+		dispatch(addLike(articleRef, setReactions))
 	}
 
-	const addDislike = () => {
-		dispatch({ type: 'ADD_DISLIKE', payload: 1 })
+	const addDislikeReaction = () => {
+		const setReactions = {
+			'reactions.dislikes': +dislikes + 1
+		}
+
+		dispatch(addDislike(articleRef, setReactions))
 	}
 
 	return (
-		<MainContainer title={`${post.id} | Blog of Max`}>
+		<MainContainer title={`${article.id} | Blog of Max`}>
 			<Head>
 				<meta name="description" content="Articles about main projacts of Max Larionov" />
 			</Head>
 
 			<MainBody>
 				<MainHeader>
-					<Title>Articles/{post.id}</Title>
+					<Title>Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>
@@ -104,29 +131,47 @@ const Article = ({ post }) => {
 						/>
 					</ArticleImg>
 					<ArticleTitle>
-						{post.title}
+						{article.title}
 					</ArticleTitle>
 					<ArticleDate>
-						03.03.2003
+						{article.date}
 					</ArticleDate>
+					{text.map((p, index) => (
+						<Box key={index}>
+							{p.text &&
+								<ArticleText>{p.text}</ArticleText>
+							}
+							{p.img &&
+								<ArticleImg>
+									<Image
+										src={p.img}
+										alt='Coding'
+										width='620px'
+										height='300px'
+									/>
+								</ArticleImg>
+							}
+
+						</Box>
+					))}
 					<ArticleText>
-						{post.body}
+						{article.title}
 					</ArticleText>
 				</Box>
 
 				<ArticleFooter>
 					<Reactions>
 						<Reaction>
-							<Like onClick={addLike}>
+							<Like onClick={addLikeReaction}>
 								<ThumbUp sx={{ color: '#AF14D7' }} />
 							</Like>
-							{like}
+							{likes}
 						</Reaction>
 						<Reaction>
-							<Dislike onClick={addDislike}>
+							<Dislike onClick={addDislikeReaction}>
 								<ThumbDown />
 							</Dislike>
-							{dislike}
+							{dislikes}
 						</Reaction>
 					</Reactions>
 					<Link href={'/articles'}>
@@ -142,13 +187,13 @@ const Article = ({ post }) => {
 
 export default Article
 
-export async function getStaticPaths() {
-	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
-	const posts = await response.json()
-
-	const paths = posts.map((post) => ({
-		params: { id: post.id.toString() },
-	}))
+export const getStaticPaths = async () => {
+	const snapshot = await getDocs(collection(db, 'articles'))
+	const paths = snapshot.docs.map(doc => {
+		return {
+			params: { id: doc.id.toString() }
+		}
+	})
 
 	return {
 		paths,
@@ -156,13 +201,37 @@ export async function getStaticPaths() {
 	}
 }
 
-export async function getStaticProps(context) {
-	const { params } = context
-	const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
-	const post = await response.json()
+// export async function getStaticPaths() {
+// 	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
+// 	const posts = await response.json()
+
+// 	const paths = posts.map((post) => ({
+// 		params: { id: post.id.toString() },
+// 	}))
+
+// 	return {
+// 		paths,
+// 		fallback: false
+// 	}
+// }
+
+export const getStaticProps = async (context) => {
+	const id = context.params.id
+	const docRef = doc(db, 'articles', id)
+	const docSnap = await getDoc(docRef)
+
 	return {
-		props: {
-			post
-		},
+		props: { articleProps: JSON.stringify(docSnap.data()) || null }
 	}
 }
+
+// export async function getStaticProps(context) {
+// 	const { params } = context
+// 	const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
+// 	const post = await response.json()
+// 	return {
+// 		props: {
+// 			post
+// 		},
+// 	}
+// }
