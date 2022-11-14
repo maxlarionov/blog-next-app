@@ -25,12 +25,11 @@ font-weight: 700;
 font-size: 24px;
 `
 
-const articles = () => {
+const Articles = () => {
 
 	const [articles, setArticles] = useState([])
 
 	useEffect(() => {
-		// getStore()
 		const articlesRef = collection(db, 'articles')
 		const q = query(articlesRef, where('type', '==', 'text'))
 
@@ -69,7 +68,7 @@ const articles = () => {
 	)
 }
 
-export default articles
+export default Articles
 
 // export async function getStaticProps(context) {
 // 	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
