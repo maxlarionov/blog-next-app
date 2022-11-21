@@ -74,7 +74,6 @@ const Article = ({ articleProps, lang }) => {
 	const textEn = article.text
 	const textUk = article.textUk
 	const reactions = article.reactions
-	const { t } = useTranslation()
 	const activeLang = lang || en
 
 	console.log(article)
@@ -119,7 +118,7 @@ const Article = ({ articleProps, lang }) => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>{t('article:title')}: Articles/{article.title}</Title>
+					<Title>Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>
@@ -245,16 +244,17 @@ export const getStaticPaths = async ({ locales }) => {
 export const getStaticProps = async (context) => {
 	const id = context.params.id
 	const lang = context.locale
-	// const articleProps = loadArticle(id)
-	const docRef = doc(db, 'articles', id)
-	const docSnap = await getDoc(docRef)
-	const articleProps = JSON.stringify(docSnap.data())
+	const articleProps = await loadArticle(id)
+	const translate = await serverSideTranslations(lang)
+	// const docRef = doc(db, 'articles', id)
+	// const docSnap = await getDoc(docRef)
+	// const articleProps = JSON.stringify(docSnap.data())
 
 	return {
 		props: {
-			// articleProps,
-			articleProps: articleProps || null,
-			...(await serverSideTranslations(lang, ['article'])),
+			articleProps,
+			// articleProps: articleProps,
+			...(translate),
 			lang
 		}
 	}
