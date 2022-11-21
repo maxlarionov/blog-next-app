@@ -76,6 +76,8 @@ const Article = ({ articleProps, lang }) => {
 	const { t } = useTranslation()
 	const activeLang = lang || en
 
+	console.log(article)
+
 	const dispatch = useDispatch()
 
 	useEffect(() => {
@@ -107,8 +109,6 @@ const Article = ({ articleProps, lang }) => {
 
 		dispatch(addDislike(articleRef, setReactions))
 	}
-
-	console.log(activeLang)
 
 	return (
 		<MainContainer title={`${article.id} | Blog of Max`}>
