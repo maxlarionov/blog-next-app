@@ -13,6 +13,7 @@ import { db } from "../../utils/Firebase"
 import { addDislike, addLike, getReactions } from "../../store/actions/article"
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from "next-i18next"
+import { loadArticle } from "../../lib/load-article"
 
 const MainBody = styled(Box)`
 	padding: 20px;
@@ -244,12 +245,15 @@ export const getStaticPaths = async ({ locales }) => {
 export const getStaticProps = async (context) => {
 	const id = context.params.id
 	const lang = context.locale
+	// const articleProps = loadArticle(id)
 	const docRef = doc(db, 'articles', id)
 	const docSnap = await getDoc(docRef)
+	const articleProps = JSON.stringify(docSnap.data())
 
 	return {
 		props: {
-			articleProps: JSON.stringify(docSnap.data()) || null,
+			// articleProps,
+			articleProps: articleProps || null,
 			...(await serverSideTranslations(lang, ['article'])),
 			lang
 		}
