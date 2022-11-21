@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import MainContainer from '../components/MainContainer'
+import MainContainer from '../components/Sidebar'
 import { doc, getFirestore, onSnapshot, collection, getDoc, query, getDocs, where } from "firebase/firestore"
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { initializeApp } from 'firebase/app'

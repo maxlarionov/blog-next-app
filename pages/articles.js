@@ -1,11 +1,13 @@
 import { Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import { collection, onSnapshot, query, where } from "firebase/firestore"
+import { serverSideTranslations } from "next-i18next/serverSideTranslations"
 import Head from "next/head"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import styled from "styled-components"
-import MainContainer from "../components/MainContainer"
+import MainContainer from "../components/Sidebar"
 import Post from "../components/Post"
 import { db } from "../utils/Firebase"
 
@@ -19,15 +21,16 @@ justify-content: space-between;
 align-items: center;
 margin-bottom: 20px;
 `
-const Title = styled(Typography)`
+const Title = styled(Box)`
 font-family: 'Montserrat', sans-serif;
 font-weight: 700;
 font-size: 24px;
 `
 
 const Articles = () => {
-
 	const [articlesList, setArticlesList] = useState([])
+
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		const articlesRef = collection(db, 'articles')
@@ -48,7 +51,7 @@ const Articles = () => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>Articles/</Title>
+					<Title>{t('article:title')}: Articles/</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>
@@ -70,13 +73,11 @@ const Articles = () => {
 
 export default Articles
 
-// export async function getStaticProps(context) {
-// 	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
-// 	const posts = await response.json()
-// 	return {
-// 		props: {
-// 			posts
-// 		}, // will be passed to the page component as props
-// 	}
-// }
+export async function getStaticProps({ locale }) {
+	return {
+		props: {
+			...(await serverSideTranslations(locale, ['article']))
+		}, // will be passed to the page component as props
+	}
+}
 

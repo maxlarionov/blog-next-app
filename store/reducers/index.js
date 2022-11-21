@@ -1,10 +1,9 @@
 import { combineReducers } from 'redux'
-import { likesReduser, emReduser } from './article'
+import { likesReduser } from './article'
+import { sidebarReduser } from './sidebar'
 
 
 export const rootReduser = combineReducers({
 	likes: likesReduser,
-	ems: emReduser
+	sidebar: sidebarReduser
 })
-
-// export const rootReducer = combineReducers({ todos: todosReducer })

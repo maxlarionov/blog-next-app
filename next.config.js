@@ -7,6 +7,10 @@ const nextConfig = {
   },
   compiler: {
     styledComponents: true
+  },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'uk'],
   }
 }
 

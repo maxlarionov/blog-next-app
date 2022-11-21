@@ -31,21 +31,6 @@ export const likesReduser = (state = initialState, action) => {
    }
 }
 
-const emDefaultState = {
-   ems: []
-}
-
-export const emReduser = (state = emDefaultState, action) => {
-   switch (action.type) {
-      case 'ADD_LIKE':
-         return { ...state, like: state.like + 1 }
-      case 'ADD_DISLIKE':
-         return { ...state, like: state.like - 1 }
-      default:
-         return state
-   }
-}
-
 
 
 // const initialState = {

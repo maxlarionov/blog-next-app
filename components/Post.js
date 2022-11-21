@@ -23,12 +23,12 @@ flex: 1 1 340px;
 margin: 20px;
 color: black;
 `
-const PostTitle = styled(Typography)`
+const PostTitle = styled(Box)`
 font-family: 'Montserrat', sans-serif;
 font-weight: 500;
 font-size: 20px;
 `
-const PostText = styled(Typography)`
+const PostText = styled(Box)`
 font-family: 'Montserrat', sans-serif;
 font-weight: 400;
 font-size: 14px;

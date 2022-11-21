@@ -5,12 +5,14 @@ import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import styled from "styled-components"
-import MainContainer from "../../components/MainContainer"
-import { useEffect, useState } from "react"
+import MainContainer from "../../components/Sidebar"
+import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs } from "firebase/firestore"
 import { db } from "../../utils/Firebase"
 import { addDislike, addLike, getReactions } from "../../store/actions/article"
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from "next-i18next"
 
 const MainBody = styled(Box)`
 	padding: 20px;
@@ -22,7 +24,7 @@ const MainHeader = styled(Box)`
 	align-items: center;
 	margin-bottom: 20px;
 `
-const Title = styled(Typography)`
+const Title = styled(Box)`
 	font-family: 'Montserrat', sans-serif;
 	font-weight: 700;
 	font-size: 24px;
@@ -33,7 +35,7 @@ const ArticleImg = styled(Box)`
 	border-radius: 20px;
 	overflow: hidden;
 `
-const ArticleTitle = styled(Typography)`
+const ArticleTitle = styled(Box)`
 	font-family: 'Montserrat', sans-serif;
 	font-size: 24px;
 	font-weight: 500;
@@ -66,10 +68,13 @@ const ArticleFooter = styled(Box)`
 	text-align: center;
 `
 
-const Article = ({ articleProps }) => {
+const Article = ({ articleProps, lang }) => {
 	const article = JSON.parse(articleProps)
-	const text = article.text
+	const textEn = article.text
+	const textUk = article.textUk
 	const reactions = article.reactions
+	const { t } = useTranslation()
+	const activeLang = lang || en
 
 	const dispatch = useDispatch()
 
@@ -103,6 +108,8 @@ const Article = ({ articleProps }) => {
 		dispatch(addDislike(articleRef, setReactions))
 	}
 
+	console.log(activeLang)
+
 	return (
 		<MainContainer title={`${article.id} | Blog of Max`}>
 			<Head>
@@ -111,7 +118,7 @@ const Article = ({ articleProps }) => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>Articles/{article.title}</Title>
+					<Title>{t('article:title')}Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>
@@ -136,24 +143,42 @@ const Article = ({ articleProps }) => {
 					<ArticleDate>
 						{article.date}
 					</ArticleDate>
-					{text.map((p, index) => (
-						<Box key={index}>
-							{p.text &&
-								<ArticleText>{p.text}</ArticleText>
-							}
-							{p.img &&
-								<ArticleImg>
-									<Image
-										src={p.img}
-										alt='Coding'
-										width='620px'
-										height='300px'
-									/>
-								</ArticleImg>
-							}
-
-						</Box>
-					))}
+					{activeLang === 'en' ? (
+						textEn.map((p, index) => (
+							<Box key={index}>
+								{p.text &&
+									<ArticleText>{p.text}</ArticleText>
+								}
+								{p.img &&
+									<ArticleImg>
+										<Image
+											src={p.img}
+											alt='Coding'
+											width='620px'
+											height='300px'
+										/>
+									</ArticleImg>
+								}
+							</Box>
+						))) : (
+						textUk.map((p, index) => (
+							<Box key={index}>
+								{p.text &&
+									<ArticleText>{p.text}</ArticleText>
+								}
+								{p.img &&
+									<ArticleImg>
+										<Image
+											src={p.img}
+											alt='Coding'
+											width='620px'
+											height='300px'
+										/>
+									</ArticleImg>
+								}
+							</Box>
+						)))
+					}
 					<ArticleText>
 						{article.title}
 					</ArticleText>
@@ -187,17 +212,18 @@ const Article = ({ articleProps }) => {
 
 export default Article
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = async ({ locales }) => {
 	const snapshot = await getDocs(collection(db, 'articles'))
-	const paths = snapshot.docs.map(doc => {
-		return {
-			params: { id: doc.id.toString() }
-		}
-	})
+	const paths = snapshot.docs
+		.map(doc => locales.map((locale) => ({
+			params: { id: doc.id.toString() },
+			locale
+		})))
+		.flat()
 
 	return {
 		paths,
-		fallback: false
+		fallback: true
 	}
 }
 
@@ -217,11 +243,16 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (context) => {
 	const id = context.params.id
+	const lang = context.locale
 	const docRef = doc(db, 'articles', id)
 	const docSnap = await getDoc(docRef)
 
 	return {
-		props: { articleProps: JSON.stringify(docSnap.data()) || null }
+		props: {
+			articleProps: JSON.stringify(docSnap.data()) || null,
+			...(await serverSideTranslations(lang, ['article'])),
+			lang
+		}
 	}
 }
 

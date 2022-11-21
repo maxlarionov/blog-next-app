@@ -1,6 +1,6 @@
 import { Box } from "@mui/system"
 import Router from "next/router"
-import MainContainer from "../../components/MainContainer"
+import MainContainer from "../../components/Sidebar"
 
 const About = () => {
 
