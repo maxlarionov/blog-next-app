@@ -1,6 +1,6 @@
 import ThumbUp from "@mui/icons-material/ThumbUp"
 import ThumbDown from "@mui/icons-material/ThumbDown"
-import { Box, IconButton, Typography } from "@mui/material"
+import { Box, IconButton } from "@mui/material"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -118,7 +118,7 @@ const Article = ({ articleProps, lang }) => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>{t('article:title')}Articles/{article.title}</Title>
+					<Title>{t('article:title')}: Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>

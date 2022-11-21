@@ -27,7 +27,7 @@ font-weight: 700;
 font-size: 24px;
 `
 
-const Articles = () => {
+const Articles = ({ locale }) => {
 	const [articlesList, setArticlesList] = useState([])
 
 	const { t } = useTranslation()
@@ -62,7 +62,13 @@ const Articles = () => {
 				</MainHeader>
 				<Box>
 					{articlesList.map(post => (
-						<Post key={post.id} id={post.id} title={post.title} />
+						<Post
+							key={post.id}
+							id={post.id}
+							title={locale === 'en' ? post.title : post.titleUk}
+							description={locale === 'en' ? post.description : post.descriptionUk}
+							lang={locale}
+						/>
 					))}
 					<Post />
 				</Box>
@@ -76,6 +82,7 @@ export default Articles
 export async function getStaticProps({ locale }) {
 	return {
 		props: {
+			locale,
 			...(await serverSideTranslations(locale, ['article']))
 		}, // will be passed to the page component as props
 	}

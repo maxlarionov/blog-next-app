@@ -1,25 +1,16 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import { useEffect, useState } from 'react'
 import MainContainer from '../components/Sidebar'
-import { doc, getFirestore, onSnapshot, collection, getDoc, query, getDocs, where } from "firebase/firestore"
-import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { initializeApp } from 'firebase/app'
+import { onSnapshot, collection, query, where } from "firebase/firestore"
 import { db } from '../utils/Firebase'
 
 
 
 export default function Home() {
-  // console.log(process.env.NEXT_PUBLIC_ENV)
-  const [art, setArt] = useState()
-
   const [articles, setArticles] = useState([])
 
   useEffect(() => {
-    // getStore()
     const articlesRef = collection(db, 'articles')
     const q = query(articlesRef, where('type', '==', 'text'))
 
@@ -30,20 +21,6 @@ export default function Home() {
 
     return unSub
   }, [])
-
-  // const getStore = async () => {
-  //   const articlesRef = collection(db, 'articles')
-  //   const q = query(articlesRef, where('type', '==', 'text'))
-
-  //   const querySnapshot = await getDocs(q)
-  //   querySnapshot.forEach((doc) => {
-  //     // doc.data() is never undefined for query doc snapshots
-  //     console.log(doc.id, ' => ', doc.data())
-  //     setArticles(prevState => [...prevState, doc.data()])
-  //   })
-  // }
-
-
 
   return (
     <MainContainer title={'My Blog'}>
