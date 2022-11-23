@@ -5,6 +5,10 @@ const nextConfig = {
   images: {
     domains: ['i.ibb.co'],
   },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'uk'],
+  },
   compiler: {
     styledComponents: true
   }

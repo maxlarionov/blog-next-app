@@ -2,6 +2,7 @@ import { Box } from "@mui/material"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import styled from "styled-components"
 
 const Wrapper = styled(Box)`
@@ -39,6 +40,14 @@ const SidebarBottom = styled(Box)`
 `
 
 const MainContainer = ({ children, title }) => {
+	const router = useRouter()
+	const { locales, locale, pathname, query, asPath } = router
+	const activeLocale = locale
+
+	const otherLocales = (locales || []).filter(
+		(locale) => locale !== activeLocale
+	)
+
 	return (
 		<Wrapper>
 			<Head>
@@ -80,6 +89,20 @@ const MainContainer = ({ children, title }) => {
 						<a>About me</a>
 					</Link>
 					<Link href={'/articles'}><a>Articles</a></Link>
+
+					{otherLocales.map((locale) => {
+						return (
+							<Link
+								key={locale}
+								href={{ pathname, query }}
+								as={asPath}
+								locale={locale}
+								legacyBehavior
+							>
+								{locale === 'en' ? 'English' : 'Українська'}
+							</Link>
+						)
+					})}
 				</SidebarBottom>
 			</SidebarContainer>
 

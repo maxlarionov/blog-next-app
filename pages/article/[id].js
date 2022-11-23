@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"
 import { db } from "../../utils/Firebase"
 import { addDislike, addLike, getReactions } from "../../store/actions/article"
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from "react-i18next"
 
 const MainBody = styled(Box)`
 	padding: 20px;
@@ -70,6 +72,7 @@ const Article = ({ articleProps }) => {
 	const article = JSON.parse(articleProps)
 	const text = article.text
 	const reactions = article.reactions
+	const { t } = useTranslation()
 
 	const dispatch = useDispatch()
 
@@ -111,7 +114,7 @@ const Article = ({ articleProps }) => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>Articles/{article.title}</Title>
+					<Title>{t('articles:title')}Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>
@@ -187,19 +190,34 @@ const Article = ({ articleProps }) => {
 
 export default Article
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = async ({ locales }) => {
 	const snapshot = await getDocs(collection(db, 'articles'))
-	const paths = snapshot.docs.map(doc => {
-		return {
-			params: { id: doc.id.toString() }
-		}
-	})
+	const paths = snapshot.docs
+		.map(doc => locales.map((locale) => ({
+			params: { id: doc.id.toString() },
+			locale
+		})))
+		.flat()
 
 	return {
 		paths,
-		fallback: false
+		fallback: true
 	}
 }
+
+// export const getStaticPaths = async () => {
+// 	const snapshot = await getDocs(collection(db, 'articles'))
+// 	const paths = snapshot.docs.map(doc => {
+// 		return {
+// 			params: { id: doc.id.toString() }
+// 		}
+// 	})
+
+// 	return {
+// 		paths,
+// 		fallback: false
+// 	}
+// }
 
 // export async function getStaticPaths() {
 // 	const response = await fetch('https://jsonplaceholder.typicode.com/posts')
@@ -215,13 +233,37 @@ export const getStaticPaths = async () => {
 // 	}
 // }
 
+// export const getStaticProps = async (context) => {
+// 	const id = context.params.id
+// 	const lang = context.locale
+// 	const articleProps = await loadArticle(id)
+// 	const translate = await serverSideTranslations(lang)
+// 	// const docRef = doc(db, 'articles', id)
+// 	// const docSnap = await getDoc(docRef)
+// 	// const articleProps = JSON.stringify(docSnap.data())
+
+// 	return {
+// 		props: {
+// 			articleProps,
+// 			// articleProps: articleProps,
+// 			...(translate),
+// 			lang
+// 		}
+// 	}
+// }
+
 export const getStaticProps = async (context) => {
 	const id = context.params.id
+	const lang = context.locale
 	const docRef = doc(db, 'articles', id)
 	const docSnap = await getDoc(docRef)
 
 	return {
-		props: { articleProps: JSON.stringify(docSnap.data()) || null }
+		props: {
+			articleProps: JSON.stringify(docSnap.data()) || null,
+			...(await serverSideTranslations(lang, ['articles'])),
+			lang
+		}
 	}
 }
 

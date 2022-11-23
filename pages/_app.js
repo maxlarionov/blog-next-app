@@ -1,6 +1,7 @@
 import { Provider } from 'react-redux'
 import { createGlobalStyle } from 'styled-components'
 import { store } from '../store'
+import { appWithTranslation } from 'next-i18next'
 
 const GlobalStyle = createGlobalStyle`
 body {
@@ -30,4 +31,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default appWithTranslation(MyApp)
