@@ -190,20 +190,38 @@ const Article = ({ articleProps }) => {
 
 export default Article
 
-export const getStaticPaths = async ({ locales }) => {
-	const snapshot = await getDocs(collection(db, 'articles'))
-	const paths = snapshot.docs
-		.map(doc => locales.map((locale) => ({
-			params: { id: doc.id.toString() },
-			locale
-		})))
-		.flat()
+export const getServerSideProps = async (context) => {
+	const id = context.params.id
+	const lang = context.locale
+	const docRef = doc(db, 'articles', id)
+	const docSnap = await getDoc(docRef)
+	const articleProps = JSON.stringify(docSnap.data())
 
 	return {
-		paths,
-		fallback: true
+		props: {
+			articleProps,
+			...(await serverSideTranslations(lang, ['articles'])),
+			lang
+		}
 	}
 }
+
+//!
+
+// export const getStaticPaths = async ({ locales }) => {
+// 	const snapshot = await getDocs(collection(db, 'articles'))
+// 	const paths = snapshot.docs
+// 		.map(doc => locales.map((locale) => ({
+// 			params: { id: doc.id.toString() },
+// 			locale
+// 		})))
+// 		.flat()
+
+// 	return {
+// 		paths,
+// 		fallback: true
+// 	}
+// }
 
 // export const getStaticPaths = async () => {
 // 	const snapshot = await getDocs(collection(db, 'articles'))
@@ -252,20 +270,22 @@ export const getStaticPaths = async ({ locales }) => {
 // 	}
 // }
 
-export const getStaticProps = async (context) => {
-	const id = context.params.id
-	const lang = context.locale
-	const docRef = doc(db, 'articles', id)
-	const docSnap = await getDoc(docRef)
+//!
 
-	return {
-		props: {
-			articleProps: JSON.stringify(docSnap.data()) || null,
-			...(await serverSideTranslations(lang, ['articles'])),
-			lang
-		}
-	}
-}
+// export const getStaticProps = async (context) => {
+// 	const id = context.params.id
+// 	const lang = context.locale
+// 	const docRef = doc(db, 'articles', id)
+// 	const docSnap = await getDoc(docRef)
+
+// 	return {
+// 		props: {
+// 			articleProps: JSON.stringify(docSnap.data()) || null,
+// 			...(await serverSideTranslations(lang, ['articles'])),
+// 			lang
+// 		}
+// 	}
+// }
 
 // export async function getStaticProps(context) {
 // 	const { params } = context
