@@ -114,7 +114,7 @@ const Article = ({ articleProps }) => {
 
 			<MainBody>
 				<MainHeader>
-					<Title>{t('articles:title')}Articles/{article.title}</Title>
+					<Title>{t('articles:title')}: Articles/{article.title}</Title>
 					<Box>
 						<Link href={'/about'}>
 							<a>

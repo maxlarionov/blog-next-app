@@ -1,9 +1,13 @@
+import { AirlineSeatFlatAngled } from "@mui/icons-material"
 import { Box } from "@mui/material"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import styled from "styled-components"
+import { setSidebarLang } from "../store/actions/sidebar"
 
 const Wrapper = styled(Box)`
 	max-width: 960px;
@@ -31,13 +35,21 @@ const PersonName = styled(Box)`
 	font-family: 'Montserrat', sans-serif;
 	font-size: 16px;
 `
-const SidebarBottom = styled(Box)`
+const SidebarCenter = styled(Box)`
 	font-family: 'Montserrat', sans-serif;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
 	font-size: 14px;
 `
+const SidebarBottom = styled(Box)`
+	font-family: 'Montserrat', sans-serif;
+	display: flex;
+	font-size: 14px;
+	margin-top: 10px;
+`
+
+
 
 const MainContainer = ({ children, title }) => {
 	const router = useRouter()
@@ -47,6 +59,21 @@ const MainContainer = ({ children, title }) => {
 	const otherLocales = (locales || []).filter(
 		(locale) => locale !== activeLocale
 	)
+
+	const dispatch = useDispatch()
+
+	const englishSidebar = { firstName: 'Max', lastName: 'Larionov', about: 'About me', articles: 'Articles' }
+	const ukraineSidebar = { firstName: 'Макс', lastName: 'Ларіонов', about: 'Про мене', articles: 'Статті' }
+
+	useEffect(() => {
+		if (locale === 'en') {
+			dispatch(setSidebarLang(englishSidebar))
+		} else if (locale === 'uk') {
+			dispatch(setSidebarLang(ukraineSidebar))
+		}
+	}, [locale])
+
+	const sidebarText = useSelector(state => state.sidebar.sidebar)
 
 	return (
 		<Wrapper>
@@ -69,27 +96,24 @@ const MainContainer = ({ children, title }) => {
 						<Link href={'/'}>
 							<a>
 								<Box>
-									Max
+									{sidebarText.firstName}
 								</Box>
 								<Box>
-									Larionov
+									{sidebarText.lastName}
 								</Box>
 							</a>
 						</Link>
 					</PersonName>
 				</SidebarTop>
-				<SidebarBottom>
-					<Box>
-						All articles: 5
-					</Box>
-					<Box>
-						All reactions: 58
-					</Box>
+				<SidebarCenter>
 					<Link href={'/about'}>
-						<a>About me</a>
+						<a>{sidebarText.about}</a>
 					</Link>
-					<Link href={'/articles'}><a>Articles</a></Link>
-
+					<Link href={'/articles'}>
+						<a>{sidebarText.articles}</a>
+					</Link>
+				</SidebarCenter>
+				<SidebarBottom>
 					{otherLocales.map((locale) => {
 						return (
 							<Link
@@ -103,6 +127,7 @@ const MainContainer = ({ children, title }) => {
 							</Link>
 						)
 					})}
+
 				</SidebarBottom>
 			</SidebarContainer>
 

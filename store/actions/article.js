@@ -1,4 +1,4 @@
-import { setDoc, updateDoc } from 'firebase/firestore'
+import { updateDoc } from 'firebase/firestore'
 import {
    ADD_DISLIKE_FAILURE, ADD_DISLIKE_REQUEST, ADD_DISLIKE_SUCCESS,
    ADD_LIKE_FAILURE, ADD_LIKE_REQUEST, ADD_LIKE_SUCCESS,
