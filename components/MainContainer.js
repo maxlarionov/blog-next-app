@@ -69,7 +69,7 @@ const MainContainer = ({ children, title }) => {
 						<Link href={'/'}>
 							<a>
 								<Box>
-									Max
+									{locale === 'en' ? 'EN' : 'UK'}
 								</Box>
 								<Box>
 									Larionov
